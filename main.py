@@ -21,6 +21,10 @@ class ImageTaggerApp:
         # Load available tags from file
         self.load_available_tags()
         self.create_widgets()
+        
+        # Bind keyboard events for navigation
+        self.root.bind("<Left>", lambda event: self.prev_image())
+        self.root.bind("<Right>", lambda event: self.next_image())
 
     def create_widgets(self):
         # Load and navigation buttons at the top
@@ -33,6 +37,10 @@ class ImageTaggerApp:
         self.prev_button.pack(side="left", padx=5)
         self.next_button = tk.Button(self.button_frame, text="Next", command=self.next_image)
         self.next_button.pack(side="left", padx=5)
+
+        # Image counter label next to navigation buttons
+        self.counter_label = tk.Label(self.button_frame, text="No images loaded")
+        self.counter_label.pack(side="left", padx=10)
 
         # Tag buttons below navigation buttons
         self.tag_button_frame = tk.Frame(self.root)
@@ -110,6 +118,9 @@ class ImageTaggerApp:
             self.img_label.config(image=self.img_tk, text="")
             self.load_tags(file_path)
             self.update_tag_display()
+            self.update_counter_display()
+        else:
+            self.counter_label.config(text="No images loaded")
 
     def load_tags(self, file_path):
         self.tags.clear()
@@ -151,6 +162,12 @@ class ImageTaggerApp:
         if self.image_files and self.current_index > 0:
             self.current_index -= 1
             self.load_image()
+
+    def update_counter_display(self):
+        if self.image_files:
+            self.counter_label.config(text=f"Image {self.current_index + 1} of {len(self.image_files)}")
+        else:
+            self.counter_label.config(text="No images loaded")
 
 if __name__ == "__main__":
     root = TkinterDnD.Tk()  # Create the TkinterDnD root window
