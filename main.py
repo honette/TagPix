@@ -19,13 +19,13 @@ class ImageTaggerApp:
         self.available_tags = []
         
         # Load available tags from file
-        self.available_tags = ['1girl', 'smile', 'standing']
+        self.load_available_tags()
         
         # Enable D&D support
         # Removed reassigning self.root to TkinterDnD.Tk()
         
         # UI Elements
-        # self.load_available_tags()
+        self.load_available_tags()
         self.create_widgets()
 
     def create_widgets(self):
