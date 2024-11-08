@@ -16,6 +16,10 @@ class ImageTaggerApp:
         self.image_files = []
         self.current_index = 0
         self.tags = set()
+        self.available_tags = []
+        
+        # Load available tags from file
+        self.load_available_tags()
         
         # Enable D&D support
         # Removed reassigning self.root to TkinterDnD.Tk()
@@ -35,13 +39,22 @@ class ImageTaggerApp:
         self.next_button = tk.Button(self.button_frame, text="Next", command=self.next_image)
         self.next_button.pack(side="left", padx=5)
 
-        self.tag_entry = tk.Entry(self.button_frame)
-        self.tag_entry.pack(side="left", padx=5)
-        self.add_tag_button = tk.Button(self.button_frame, text="Add Tag", command=self.add_tag)
-        self.add_tag_button.pack(side="left", padx=5)
+        # Tag buttons below navigation buttons
+        self.tag_button_frame = tk.Frame(self.root)
+        self.tag_button_frame.pack(pady=10)
+        for tag in self.available_tags:
+            tag_button = tk.Button(self.tag_button_frame, text=tag, command=lambda t=tag: self.add_tag_from_button(t))
+            tag_button.pack(side="left", padx=5)
 
-        self.save_button = tk.Button(self.button_frame, text="Save Tags", command=self.save_tags)
-        self.save_button.pack(side="left", padx=10)
+        # Tag display area (Text Box) with Save Tags button
+        self.tag_display_frame = tk.Frame(self.root)
+        self.tag_display_frame.pack(pady=10, fill='x', padx=50)
+
+        self.tag_text = tk.Text(self.tag_display_frame, height=2, wrap='word')
+        self.tag_text.pack(side='left', fill='x', expand=True, padx=5)
+        
+        self.save_button = tk.Button(self.tag_display_frame, text="Save Tags", command=self.save_tags)
+        self.save_button.pack(side='left', padx=10)
 
         # Image preview area
         self.img_label = tk.Label(self.root, text="Drop Image Here", relief="solid")
@@ -51,9 +64,12 @@ class ImageTaggerApp:
         self.img_label.drop_target_register(DND_FILES)
         self.img_label.dnd_bind('<<Drop>>', self.on_drop)
 
-        # Tag display area
-        self.tags_frame = tk.Frame(self.root)
-        self.tags_frame.pack(pady=10, padx=50)
+    def load_available_tags(self):
+        # Load available tags from planned_tags.txt
+        tag_file = 'planned_tags.txt'
+        if os.path.exists(tag_file):
+            with open(tag_file, 'r') as file:
+                self.available_tags = [line.strip() for line in file if line.strip()]
 
     def on_drop(self, event):
         # Handle the dropped file
@@ -93,6 +109,7 @@ class ImageTaggerApp:
             # Update label size and image
             self.img_label.config(image=self.img_tk, text="")
             self.load_tags(file_path)
+            self.update_tag_display()
 
     def load_tags(self, file_path):
         self.tags.clear()
@@ -103,19 +120,15 @@ class ImageTaggerApp:
                 self.tags.update(tags)
         self.update_tag_display()
 
-    def add_tag(self):
-        tag = self.tag_entry.get().strip()
-        if tag:
-            self.tags.add(tag)
-            self.tag_entry.delete(0, tk.END)
-            self.update_tag_display()
+    def add_tag_from_button(self, tag):
+        self.tags.add(tag)
+        self.tag_text.delete(1.0, tk.END)
+        self.tag_text.insert(tk.END, ', '.join(self.tags))
+        self.update_tag_display()
 
     def update_tag_display(self):
-        for widget in self.tags_frame.winfo_children():
-            widget.destroy()
-        for tag in self.tags:
-            tag_label = tk.Label(self.tags_frame, text=tag, relief="solid", padx=5, pady=2)
-            tag_label.pack(side="left", padx=5)
+        self.tag_text.delete(1.0, tk.END)
+        self.tag_text.insert(tk.END, ', '.join(self.tags))
 
     def save_tags(self):
         if not self.image_files:
@@ -123,8 +136,10 @@ class ImageTaggerApp:
             return
         file_path = self.image_files[self.current_index]
         tag_file = f"{os.path.splitext(file_path)[0]}.txt"
+        tags_to_save = self.tag_text.get(1.0, tk.END).strip()
+        tag_file = f"{os.path.splitext(file_path)[0]}.txt"
         with open(tag_file, "w") as file:
-            file.write(", ".join(self.tags))
+            file.write(tags_to_save)
         messagebox.showinfo("Saved", "Tags saved successfully!")
 
     def next_image(self):
