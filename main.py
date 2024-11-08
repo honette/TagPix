@@ -10,7 +10,7 @@ class ImageTaggerApp:
     def __init__(self, root):
         self.root = root
         self.root.title("TagPix - Image Tagger")
-        self.root.geometry("800x600")
+        self.root.geometry("900x700")
         
         # Initialize variables
         self.image_files = []
@@ -24,9 +24,28 @@ class ImageTaggerApp:
         self.create_widgets()
 
     def create_widgets(self):
+        # Load and navigation buttons at the top
+        self.button_frame = tk.Frame(self.root)
+        self.button_frame.pack(pady=10)
+
+        self.load_button = tk.Button(self.button_frame, text="Load Folder", command=self.load_folder)
+        self.load_button.pack(side="left", padx=10)
+        self.prev_button = tk.Button(self.button_frame, text="Previous", command=self.prev_image)
+        self.prev_button.pack(side="left", padx=5)
+        self.next_button = tk.Button(self.button_frame, text="Next", command=self.next_image)
+        self.next_button.pack(side="left", padx=5)
+
+        self.tag_entry = tk.Entry(self.button_frame)
+        self.tag_entry.pack(side="left", padx=5)
+        self.add_tag_button = tk.Button(self.button_frame, text="Add Tag", command=self.add_tag)
+        self.add_tag_button.pack(side="left", padx=5)
+
+        self.save_button = tk.Button(self.button_frame, text="Save Tags", command=self.save_tags)
+        self.save_button.pack(side="left", padx=10)
+
         # Image preview area
         self.img_label = tk.Label(self.root, text="Drop Image Here", relief="solid")
-        self.img_label.pack(pady=10, expand=True)
+        self.img_label.pack(pady=10, padx=50, expand=True, fill='both')
         
         # Set up D&D on the image label
         self.img_label.drop_target_register(DND_FILES)
@@ -34,25 +53,7 @@ class ImageTaggerApp:
 
         # Tag display area
         self.tags_frame = tk.Frame(self.root)
-        self.tags_frame.pack()
-
-        # Load and navigation buttons
-        self.load_button = tk.Button(self.root, text="Load Folder", command=self.load_folder)
-        self.load_button.pack(side="left", padx=10)
-        self.prev_button = tk.Button(self.root, text="Previous", command=self.prev_image)
-        self.prev_button.pack(side="left", padx=5)
-        self.next_button = tk.Button(self.root, text="Next", command=self.next_image)
-        self.next_button.pack(side="left", padx=5)
-
-        # Tag entry and add button
-        self.tag_entry = tk.Entry(self.root)
-        self.tag_entry.pack(side="left", padx=5)
-        self.add_tag_button = tk.Button(self.root, text="Add Tag", command=self.add_tag)
-        self.add_tag_button.pack(side="left", padx=5)
-
-        # Save button
-        self.save_button = tk.Button(self.root, text="Save Tags", command=self.save_tags)
-        self.save_button.pack(side="left", padx=10)
+        self.tags_frame.pack(pady=10, padx=50)
 
     def on_drop(self, event):
         # Handle the dropped file
@@ -91,7 +92,6 @@ class ImageTaggerApp:
             
             # Update label size and image
             self.img_label.config(image=self.img_tk, text="")
-            self.img_label.pack(pady=10, expand=True)
             self.load_tags(file_path)
 
     def load_tags(self, file_path):
