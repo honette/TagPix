@@ -19,13 +19,7 @@ class ImageTaggerApp:
         self.available_tags = []
         
         # Load available tags from file
-        self.available_tags = ['1girl', 'smile', 'standing']
-        
-        # Enable D&D support
-        # Removed reassigning self.root to TkinterDnD.Tk()
-        
-        # UI Elements
-        # self.load_available_tags()
+        self.load_available_tags()
         self.create_widgets()
 
     def create_widgets(self):
@@ -69,8 +63,13 @@ class ImageTaggerApp:
         # Load available tags from planned_tags.txt
         tag_file = 'planned_tags.txt'
         if os.path.exists(tag_file):
+            print(f'Found planned_tags.txt at {os.path.abspath(tag_file)}')
             with open(tag_file, 'r') as file:
                 self.available_tags = [line.strip() for line in file if line.strip()]
+                print('Loaded tags:', self.available_tags)
+        else:
+            print(f'Error: planned_tags.txt not found at {os.path.abspath(tag_file)}')
+            print('Loaded tags:', self.available_tags)
 
     def on_drop(self, event):
         # Handle the dropped file
