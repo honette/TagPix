@@ -19,12 +19,13 @@ class ImageTaggerApp:
         self.available_tags = []
         
         # Load available tags from file
-        self.load_available_tags()
+        self.available_tags = ['1girl', 'smile', 'standing']
         
         # Enable D&D support
         # Removed reassigning self.root to TkinterDnD.Tk()
         
         # UI Elements
+        # self.load_available_tags()
         self.create_widgets()
 
     def create_widgets(self):
@@ -41,10 +42,10 @@ class ImageTaggerApp:
 
         # Tag buttons below navigation buttons
         self.tag_button_frame = tk.Frame(self.root)
-        self.tag_button_frame.pack(pady=10)
+        self.tag_button_frame.pack(pady=10, fill='x')
         for tag in self.available_tags:
             tag_button = tk.Button(self.tag_button_frame, text=tag, command=lambda t=tag: self.add_tag_from_button(t))
-            tag_button.pack(side="left", padx=5)
+            tag_button.pack(side="left", padx=5, pady=10)
 
         # Tag display area (Text Box) with Save Tags button
         self.tag_display_frame = tk.Frame(self.root)
